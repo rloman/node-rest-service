@@ -1,6 +1,10 @@
 var express = require('express');
 var app = express();
 var fs = require("fs");
+var bodyParser = require('body-parser');
+
+// parse application/json
+app.use(bodyParser.json());
 
 app.get('/api/users', function (req, res) {
    fs.readFile( __dirname + "/" + "users.json", 'utf8', function (err, data) {
@@ -36,7 +40,9 @@ app.post('/api/users', function (req, res) {
        data = JSON.parse( data );
        data["user4"] = user["user4"];
        console.log( data );
-       res.end( JSON.stringify(data));
+
+       res.end(JSON.stringify(req.body, null, 2));
+       // res.end( JSON.stringify(data));
    });
 });
 
