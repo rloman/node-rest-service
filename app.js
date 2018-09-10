@@ -2,14 +2,14 @@ var express = require('express');
 var app = express();
 var fs = require("fs");
 
-app.get('/listUsers', function (req, res) {
+app.get('/api/users', function (req, res) {
    fs.readFile( __dirname + "/" + "users.json", 'utf8', function (err, data) {
        console.log( data );
        res.end( data );
    });
 });
 
-app.get('/:id', function (req, res) {
+app.get('/api/users/:id', function (req, res) {
    // First read existing users.
    fs.readFile( __dirname + "/" + "users.json", 'utf8', function (err, data) {
       var users = JSON.parse( data );
@@ -30,7 +30,7 @@ var user = {
 
 
 
-app.post('/addUser', function (req, res) {
+app.post('/api/users', function (req, res) {
    // First read existing users.
    fs.readFile( __dirname + "/" + "users.json", 'utf8', function (err, data) {
        data = JSON.parse( data );
@@ -40,14 +40,12 @@ app.post('/addUser', function (req, res) {
    });
 });
 
-var id = 2;
-
-app.delete('/deleteUser', function (req, res) {
+app.delete('/api/users/:id', function (req, res) {
 
    // First read existing users.
    fs.readFile( __dirname + "/" + "users.json", 'utf8', function (err, data) {
        data = JSON.parse( data );
-       delete data["user" + id];
+       delete data["user" + req.params.id];
        
        console.log( data );
        res.end( JSON.stringify(data));
