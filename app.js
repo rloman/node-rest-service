@@ -9,6 +9,7 @@ app.use(bodyParser.json());
 app.get('/api/users', function (req, res) {
    fs.readFile( __dirname + "/" + "users.json", 'utf8', function (err, data) {
        console.log( data );
+         res.setHeader('Content-Type', 'application/json')
        res.end( data );
    });
 });
@@ -18,19 +19,11 @@ app.get('/api/users/:id', function (req, res) {
    fs.readFile( __dirname + "/" + "users.json", 'utf8', function (err, data) {
       var users = JSON.parse( data );
       var user = users["user" + req.params.id] 
-      console.log( user );
+      res.setHeader('Content-Type', 'application/json')
       res.end( JSON.stringify(user));
    });
-})
+});
 
-var user = {
-   "user4" : {
-      "name" : "mohit",
-      "password" : "password4",
-      "profession" : "teacher",
-      "id": 4
-   }
-}
 
 
 
@@ -38,11 +31,12 @@ app.post('/api/users', function (req, res) {
    // First read existing users.
    fs.readFile( __dirname + "/" + "users.json", 'utf8', function (err, data) {
        data = JSON.parse( data );
-       data["user4"] = user["user4"];
+       data["user9"] = req.body;
        console.log( data );
 
-       res.end(JSON.stringify(req.body, null, 2));
-       // res.end( JSON.stringify(data));
+       // res.end(JSON.stringify(data, null, 2));
+        res.setHeader('Content-Type', 'application/json')
+       res.end( JSON.stringify(data));
    });
 });
 
