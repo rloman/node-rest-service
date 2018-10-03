@@ -53,15 +53,18 @@ app.post('/api/users', function(req, res) {
 });
 
 app.delete('/api/users/:id', function(req, res) {
+console.log("I am in delete");
+  console.log(+req.params.id);
 
-  // First read existing users.
-  fs.readFile(__dirname + "/" + "users.json", 'utf8', function(err, data) {
-    data = JSON.parse(data);
-    delete data["user" + req.params.id];
+    delete users[+req.params.id];
 
-    console.log(data);
-    res.end(JSON.stringify(data));
-  });
+    console.log(this.users);
+
+
+
+
+    res.end();
+
 });
 
 var server = app.listen(8081, function() {
