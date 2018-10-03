@@ -24,7 +24,7 @@ app.get('/api/users/:id', function (req, res) {
    // First read existing users.
    fs.readFile( __dirname + "/" + "users.json", 'utf8', function (err, data) {
       var users = JSON.parse( data );
-      var user = users["user" + req.params.id] 
+      var user = users[+ req.params.id-1] 
       res.setHeader('Content-Type', 'application/json')
       res.end( JSON.stringify(user));
    });
