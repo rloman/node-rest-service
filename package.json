@@ -1,6 +1,6 @@
 {
   "name": "rest",
-  "version": "0.1.0-SNAPSHOT",
+  "version": "1.0.0",
   "description": "REST api demo NodeJS",
   "main": "app.js",
   "scripts": {
