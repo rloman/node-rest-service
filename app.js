@@ -10,15 +10,17 @@ var lastId = -1;
 // parse application/json
 app.use(bodyParser.json());
 
-app.use(function(req, res, next) {
+function init() {
   fs.readFile(__dirname + "/" + "users.json", 'utf8', function(err, data) {
     this.users = JSON.parse(data);
-    console.log(this.users);
-    console.log(typeof(this.users));
+    // console.log(this.users);
+    // console.log(typeof(this.users));
     this.lastId = this.users.length;
-    next();
+
   });
-});
+}
+
+init();
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -53,18 +55,21 @@ app.post('/api/users', function(req, res) {
 });
 
 app.delete('/api/users/:id', function(req, res) {
-console.log("I am in delete");
-  console.log(+req.params.id);
+  console.log(`pre: id=${req.params.id}`);
 
-    delete users[+req.params.id];
+  let oldLength = this.users.length;
 
-    console.log(this.users);
+    let index = Number(req.params.id)-1;
 
+    this.users.splice(index, 1);
 
+    console.log(`post: users.length=${this.users.length}`);
 
-
+    // check for error
+    if(!(this.users.length === oldLength-1)) { //error
+      throw new Error("AssertionError");
+    }
     res.end();
-
 });
 
 var server = app.listen(8081, function() {
