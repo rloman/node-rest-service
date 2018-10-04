@@ -1,3 +1,5 @@
+// "use strict";
+
 var express = require('express');
 var app = express();
 var fs = require("fs");
@@ -52,7 +54,19 @@ app.post('/api/users', function(req, res) {
   res.end(JSON.stringify(user));
 });
 
-// put????
+app.put('/api/users/:id', function(req, res) {
+  // First read existing user
+  let victim = this.users[+req.params.id - 1]
+
+  let inputUser = req.body;
+
+  victim.name=inputUser.name;
+  victim.password = inputUser.password;
+  victim.profession = inputUser.profession;
+
+  res.setHeader('Content-Type', 'application/json')
+  res.end(JSON.stringify(victim));
+});
 
 app.delete('/api/users/:id', function(req, res) {
   console.log(`pre: id=${req.params.id}`);
