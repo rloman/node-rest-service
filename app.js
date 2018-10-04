@@ -13,8 +13,7 @@ app.use(bodyParser.json());
 function init() {
   fs.readFile(__dirname + "/" + "users.json", 'utf8', function(err, data) {
     this.users = JSON.parse(data);
-    // console.log(this.users);
-    // console.log(typeof(this.users));
+
     this.lastId = this.users.length;
 
   });
@@ -31,7 +30,7 @@ app.use(function(req, res, next) {
 
 app.get('/api/users', function(req, res) {
   res.setHeader('Content-Type', 'application/json')
-  console.log(this.users);
+
   res.end(JSON.stringify(this.users));
 });
 
