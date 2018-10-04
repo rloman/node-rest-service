@@ -15,7 +15,6 @@ function init() {
     this.users = JSON.parse(data);
 
     this.lastId = this.users.length;
-
   });
 }
 
@@ -52,6 +51,8 @@ app.post('/api/users', function(req, res) {
   res.setHeader('Content-Type', 'application/json')
   res.end(JSON.stringify(user));
 });
+
+// put????
 
 app.delete('/api/users/:id', function(req, res) {
   console.log(`pre: id=${req.params.id}`);
