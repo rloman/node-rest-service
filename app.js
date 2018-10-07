@@ -30,7 +30,6 @@ app.use(function(req, res, next) {
 });
 
 function findById(id) {
-  // First read existing users.
 
  for(let user of users) {
     if (user.id === id) {
@@ -104,14 +103,10 @@ app.put('/api/users/:id', function(req, res) {
 });
 
 app.delete('/api/users/:id', function(req, res) {
-
+  let oldLength = users.length;
   let id = +req.params.id;
-  console.log(`pre: id=${id}`);
 
   let victimIndex = findIndexById(id);
-
-
-  let oldLength = users.length;
 
   users.splice(victimIndex, 1);
 
