@@ -29,18 +29,51 @@ app.use(function(req, res, next) {
   next();
 });
 
+function findById(id) {
+  // First read existing users.
+
+ for(let user of users) {
+    if (user.id === id) {
+
+      return user;
+    }
+  }
+}
+
+
+function findIndexById(id) {
+  for(let i = 0;i<users.length;i++) {
+     if (users[i].id === id) {
+
+       return i;
+     }
+   }
+}
+
 
 app.get('/api/users', function(req, res) {
+
   res.setHeader('Content-Type', 'application/json')
 
   res.end(JSON.stringify(users));
 });
 
 app.get('/api/users/:id', function(req, res) {
-  // First read existing users.
-  var user = users[+req.params.id - 1]
-  res.setHeader('Content-Type', 'application/json')
-  res.end(JSON.stringify(user));
+
+  let id = +req.params.id
+
+  let user = findById(id);
+
+  if(user) {
+    res.setHeader('Content-Type', 'application/json')
+    res.end(JSON.stringify(user));
+  }
+  else {
+    res.setHeader('Content-Type', 'application/json')
+    res.end(); // rloman send 404???
+  }
+
+
 });
 
 
@@ -57,7 +90,8 @@ app.post('/api/users', function(req, res) {
 
 app.put('/api/users/:id', function(req, res) {
   // First read existing user
-  let victim = users[+req.params.id - 1]
+  let id = +req.params.id;
+  let victim = findById(id);
 
   let inputUser = req.body;
 
@@ -70,13 +104,16 @@ app.put('/api/users/:id', function(req, res) {
 });
 
 app.delete('/api/users/:id', function(req, res) {
-  console.log(`pre: id=${req.params.id}`);
+
+  let id = +req.params.id;
+  console.log(`pre: id=${id}`);
+
+  let victimIndex = findIndexById(id);
+
 
   let oldLength = users.length;
 
-    let index = Number(req.params.id)-1;
-
-    users.splice(index, 1);
+  users.splice(victimIndex, 1);
 
     console.log(`post: users.length=${users.length}`);
 
