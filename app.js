@@ -62,8 +62,8 @@ app.put('/api/users/:id', function(req, res) {
   let inputUser = req.body;
 
   victim.name=inputUser.name;
-  victim.password = inputUser.password;
-  victim.profession = inputUser.profession;
+  victim.username=inputUser.username;
+  victim.email = inputUser.email;
 
   res.setHeader('Content-Type', 'application/json')
   res.end(JSON.stringify(victim));
