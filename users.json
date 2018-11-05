@@ -1,20 +1,41 @@
 [{
-		"id": 1,
-		"name": "John Doe",
-		"username": "jdoe",
-		"email": "john.doe@example.com"
-	},
-	{
-		"id": 2,
-		"name": "Jack Sunny",
-		"username": "jsunny",
-		"email": "sunny@shine.nl"
+    "id": 1,
+    "name": "John Doe",
+    "username": "jdoe",
+    "email": "john.doe@example.com",
+    "posts": [{
+      "id": 1,
+      "userId": 1,
+      "title": "Lorem ipsum dolor sit amet.",
+      "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent eu magna ac dolor vehicula sollicitudin. "
 
-	},
-	{
-		"id": 3,
-		"name": "Will Turing",
-		"username": "wturing",
-		"email": "wturing@clarky.com"
-	}
+    },
+		{
+      "id": 2,
+      "userId": 1,
+      "title": "I think it rocks",
+      "body": "This rocks and it rocks"
+    }
+		,
+		{
+      "id": 3,
+      "userId": 1,
+      "title": "I love coding Angular",
+      "body": "Since I always find what the problem is while coding ... :-)"
+    }
+	]
+  },
+  {
+    "id": 2,
+    "name": "Jack Sunny",
+    "username": "jsunny",
+    "email": "sunny@shine.nl"
+
+  },
+  {
+    "id": 3,
+    "name": "Will Turing",
+    "username": "wturing",
+    "email": "wturing@clarky.com"
+  }
 ]
