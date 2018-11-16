@@ -29,17 +29,6 @@ app.use(function(req, res, next) {
   next();
 });
 
-function list() {
-  connection.query('SELECT * FROM users', (err, users) => {
-    if (err){
-      throw err;
-    }
-    else {
-      return users;
-    }
-  });
-}
-
 function findById(id) {
  for(let user of users) {
     if (user.id === id) {
@@ -48,6 +37,8 @@ function findById(id) {
     }
   }
 }
+
+
 
 
 function findIndexById(id) {
@@ -62,8 +53,6 @@ function findIndexById(id) {
 
 app.get('/api/users', function(req, res) {
 
-  console.log("In get all");
-
   res.setHeader('Content-Type', 'application/json');
 
   connection.query('SELECT * FROM users', (err, users) => {
@@ -74,8 +63,6 @@ app.get('/api/users', function(req, res) {
       res.end(JSON.stringify(users));
     }
   });
-
-
 });
 
 app.get('/api/users/:id', function(req, res) {
@@ -100,12 +87,16 @@ app.get('/api/users/:id', function(req, res) {
 app.post('/api/users', function(req, res) {
 
   let user = req.body;
-  user.id = ++lastId
-  users.push(user);
 
-  // res.end(JSON.stringify(data, null, 2));
-  res.setHeader('Content-Type', 'application/json')
-  res.end(JSON.stringify(user));
+  console.log(user.name);
+
+  connection.query('INSERT INTO users SET ?', user, (err, result) => {
+      if (err) throw err;
+
+      // res.end(JSON.stringify(data, null, 2));
+      res.setHeader('Content-Type', 'application/json')
+      res.end(JSON.stringify(result));
+    });
 });
 
 app.put('/api/users/:id', function(req, res) {
