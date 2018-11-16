@@ -34,17 +34,6 @@ app.use(function(req, res, next) {
   next();
 });
 
-function findById(id) {
- for(let user of users) {
-    if (user.id === id) {
-
-      return user;
-    }
-  }
-}
-
-
-
 
 function findIndexById(id) {
   for(let i = 0;i<users.length;i++) {
@@ -73,19 +62,21 @@ app.get('/api/users', function(req, res) {
 app.get('/api/users/:id', function(req, res) {
 
   let id = +req.params.id
+  connection.query('SELECT * FROM users where id=?', [id], (err, user) => {
+    if (err) throw err;
 
-  let user = findById(id);
+    console.log('Data received from Db:\n');
+    console.log(user);
 
-  if(user) {
-    res.setHeader('Content-Type', 'application/json')
-    res.end(JSON.stringify(user));
-  }
-  else {
-    res.setHeader('Content-Type', 'application/json')
-    res.end(); // rloman send 404???
-  }
-
-
+    if(user) {
+      res.setHeader('Content-Type', 'application/json')
+      res.end(JSON.stringify(user));
+    }
+    else {
+      res.setHeader('Content-Type', 'application/json')
+      res.end(); // rloman send 404???
+    }
+  });
 });
 
 
@@ -100,7 +91,7 @@ app.post('/api/users', function(req, res) {
 
       // res.end(JSON.stringify(data, null, 2));
       res.setHeader('Content-Type', 'application/json')
-      
+
       // rloman temp
       user.id = result.insertId;
       res.end(JSON.stringify(user)); // rloman dit nog ophalen en test via select ...
