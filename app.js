@@ -1,27 +1,27 @@
 "use strict";
 
+// create connection with mysql
+const mysql = require('mysql');
+
+const connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'nodetestuser',
+  password: 'nodetestpass2018Spectrum',
+  database: 'nodetest'
+});
+
+connection.connect((err) => {
+  if (err)  {
+    throw err;
+  }
+  else {
+      console.log('Connected!');
+  }
+});
+
+// rest part
 var express = require('express');
 var app = express();
-var fs = require("fs");
-var bodyParser = require('body-parser');
-
-var users = [];
-
-var lastId = -1;
-
-// parse application/json
-app.use(bodyParser.json());
-
-function init() {
-  fs.readFile(__dirname + "/" + "users.json", 'utf8', function(err, data) {
-    users = JSON.parse(data);
-
-    lastId = users.length;
-  });
-}
-
-init();
-
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods", "*");
@@ -29,8 +29,18 @@ app.use(function(req, res, next) {
   next();
 });
 
-function findById(id) {
+function list() {
+  connection.query('SELECT * FROM users', (err, users) => {
+    if (err){
+      throw err;
+    }
+    else {
+      return users;
+    }
+  });
+}
 
+function findById(id) {
  for(let user of users) {
     if (user.id === id) {
 
@@ -52,9 +62,20 @@ function findIndexById(id) {
 
 app.get('/api/users', function(req, res) {
 
-  res.setHeader('Content-Type', 'application/json')
+  console.log("In get all");
 
-  res.end(JSON.stringify(users));
+  res.setHeader('Content-Type', 'application/json');
+
+  connection.query('SELECT * FROM users', (err, users) => {
+    if (err){
+      throw err;
+    }
+    else {
+      res.end(JSON.stringify(users));
+    }
+  });
+
+
 });
 
 app.get('/api/users/:id', function(req, res) {
