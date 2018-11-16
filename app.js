@@ -100,17 +100,45 @@ app.post('/api/users', function(req, res) {
 
 app.put('/api/users/:id', function(req, res) {
   // First read existing user
-  let id = +req.params.id;
-  let victim = findById(id);
+  let id = +req.params.id
 
-  let inputUser = req.body;
+  connection.query('SELECT * FROM users where id=?', [id], (err, target) => {
+    if (err) throw err;
 
-  victim.name=inputUser.name;
-  victim.username=inputUser.username;
-  victim.email = inputUser.email;
+    console.log('Data received from Db:\n');
+    console.log(target);
 
-  res.setHeader('Content-Type', 'application/json')
-  res.end(JSON.stringify(victim));
+    if(target) {
+      let inputUser = req.body;
+
+      console.log(inputUser);
+
+      target.name=inputUser.name;
+      target.email = inputUser.email;
+
+      console.log(target);
+
+      // and now the update
+      connection.query(
+          'UPDATE users SET email = ? Where ID = ?',
+          [inputUser.email, id],
+          (err, result) => {
+            if (err) throw err;
+
+            console.log(`Changed ${result.changedRows} row(s)`);
+          }
+        );
+
+      // end of the update
+
+      res.setHeader('Content-Type', 'application/json')
+      res.end(JSON.stringify(target));
+    }
+    else {
+      res.setHeader('Content-Type', 'application/json')
+      res.end(); // rloman send 404???
+    }
+  });
 });
 
 app.delete('/api/users/:id', function(req, res) {
