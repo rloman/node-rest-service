@@ -22,6 +22,11 @@ connection.connect((err) => {
 // rest part
 var express = require('express');
 var app = express();
+var fs = require("fs"); // rloman volgens mij kan deze nu weg
+var bodyParser = require('body-parser');
+
+app.use(bodyParser.json());
+
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods", "*");
@@ -88,14 +93,17 @@ app.post('/api/users', function(req, res) {
 
   let user = req.body;
 
-  console.log(user.name);
+  console.log(user);
 
   connection.query('INSERT INTO users SET ?', user, (err, result) => {
       if (err) throw err;
 
       // res.end(JSON.stringify(data, null, 2));
       res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify(result));
+      
+      // rloman temp
+      user.id = result.insertId;
+      res.end(JSON.stringify(user)); // rloman dit nog ophalen en test via select ...
     });
 });
 
