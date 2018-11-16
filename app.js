@@ -142,20 +142,16 @@ app.put('/api/users/:id', function(req, res) {
 });
 
 app.delete('/api/users/:id', function(req, res) {
-  let oldLength = users.length;
   let id = +req.params.id;
 
-  let victimIndex = findIndexById(id);
+  connection.query(
+  'DELETE FROM users WHERE id = ?', [id], (err, result) => {
+    if (err) throw err;
 
-  users.splice(victimIndex, 1);
-
-    console.log(`post: users.length=${users.length}`);
-
-    // check for error
-    if(!(users.length === oldLength-1)) { //error
-      throw new Error("AssertionError");
-    }
+    console.log(`Deleted ${result.affectedRows} row(s)`);
     res.end();
+  }
+);
 });
 
 var server = app.listen(8081, function() {
