@@ -86,49 +86,43 @@ app.get('/api/users/:id', function(req, res) {
 
 app.put('/api/users/:id', function(req, res) {
 
-  // First read id from params
-  let id = +req.params.id
-
-  connection.query('SELECT * FROM users where id=?', [id], (err, target) => {
-    if (!err) {
-      console.log('Data received from Db:\n');
-      console.log(target);
-
-      if (target) {
+        // First read id from params
+        let id = +req.params.id
         let inputUser = req.body;
 
-        console.log("Send user: "+inputUser);
+        console.log("Received username: "+inputUser.name);
+        console.log("Received email: "+inputUser.email);
 
-        target.name = inputUser.name;
-        target.email = inputUser.email;
-
-        console.log(target);
-
-        // and now the update
         connection.query(
-          'UPDATE users SET email = ? Where ID = ?',
-          [inputUser.email, id],
+          'UPDATE users SET name=?, username=?, email = ? Where ID = ?',
+          [inputUser.name, inputUser.username, inputUser.email, id],
           (err, result) => {
-            if (err) throw err;
+            if (!err) {
+              console.log(`Changed ${result.changedRows} row(s)`);
 
-            console.log(`Changed ${result.changedRows} row(s)`);
-          }
-        );
+              // end of the update => send response
 
-        // end of the update => send response
-        res.setHeader('Content-Type', 'application/json')
-        res.end(JSON.stringify(target));
-      }
-      else {
-        res.setHeader('Content-Type', 'application/json')
-        res.end(); // rloman send 404???
-      }
+              connection.query('SELECT * FROM users where id=?', [id], (err, user) => {
+                if (!err) {
+                  console.log('Data received from Db:\n');
+                  console.log(user);
 
-    }
-    else {
-      throw err;
-    }
-  });
+                  if (user) {
+                    res.setHeader('Content-Type', 'application/json')
+                    res.end(JSON.stringify(user));
+                  } else {
+                    res.setHeader('Content-Type', 'application/json')
+                    res.end(); // rloman send 404???
+                  }
+                } else {
+                  throw err;
+                }
+              });
+            }
+            else {
+              throw err;
+            }
+      });
 });
 
 app.delete('/api/users/:id', function(req, res) {
