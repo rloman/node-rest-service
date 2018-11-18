@@ -3,22 +3,6 @@
 // create connection with mysql
 const mysql = require('mysql');
 
-const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'nodetestuser',
-  password: 'nodetestpass2018Spectrum',
-  database: 'nodetest'
-});
-
-connection.connect((err) => {
-  if (err)  {
-    throw err;
-  }
-  else {
-      console.log('Connected!');
-  }
-});
-
 // rest part
 var express = require('express');
 var app = express();
@@ -34,27 +18,47 @@ app.use(function(req, res, next) {
   next();
 });
 
+const connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'nodetestuser',
+  password: 'nodetestpass2018Spectrum',
+  database: 'nodetest'
+});
 
-function findIndexById(id) {
-  for(let i = 0;i<users.length;i++) {
-     if (users[i].id === id) {
+connection.connect((err) => {
+  if (err) {
+    throw err;
+  } else {
+    console.log('Connected!');
+  }
+});
 
-       return i;
-     }
-   }
-}
+app.post('/api/users', function(req, res) {
 
+  let user = req.body;
+
+  connection.query('INSERT INTO users SET ?', user, (err, result) => {
+    if (!err) {
+      // res.end(JSON.stringify(data, null, 2));
+      res.setHeader('Content-Type', 'application/json')
+      // rloman temp
+      user.id = result.insertId;
+      res.end(JSON.stringify(user)); // rloman dit nog ophalen en test via select ...
+    } else {
+      throw err;
+    }
+  });
+});
 
 app.get('/api/users', function(req, res) {
 
   res.setHeader('Content-Type', 'application/json');
 
   connection.query('SELECT * FROM users', (err, users) => {
-    if (err){
-      throw err;
-    }
-    else {
+    if (!err) {
       res.end(JSON.stringify(users));
+    } else {
+      throw err;
     }
   });
 });
@@ -63,63 +67,47 @@ app.get('/api/users/:id', function(req, res) {
 
   let id = +req.params.id
   connection.query('SELECT * FROM users where id=?', [id], (err, user) => {
-    if (err) throw err;
+    if (!err) {
+      console.log('Data received from Db:\n');
+      console.log(user);
 
-    console.log('Data received from Db:\n');
-    console.log(user);
-
-    if(user) {
-      res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify(user));
-    }
-    else {
-      res.setHeader('Content-Type', 'application/json')
-      res.end(); // rloman send 404???
+      if (user) {
+        res.setHeader('Content-Type', 'application/json')
+        res.end(JSON.stringify(user));
+      } else {
+        res.setHeader('Content-Type', 'application/json')
+        res.end(); // rloman send 404???
+      }
+    } else {
+      throw err;
     }
   });
 });
 
-
-app.post('/api/users', function(req, res) {
-
-  let user = req.body;
-
-  console.log(user);
-
-  connection.query('INSERT INTO users SET ?', user, (err, result) => {
-      if (err) throw err;
-
-      // res.end(JSON.stringify(data, null, 2));
-      res.setHeader('Content-Type', 'application/json')
-
-      // rloman temp
-      user.id = result.insertId;
-      res.end(JSON.stringify(user)); // rloman dit nog ophalen en test via select ...
-    });
-});
-
 app.put('/api/users/:id', function(req, res) {
-  // First read existing user
+
+  // First read id from params
   let id = +req.params.id
 
   connection.query('SELECT * FROM users where id=?', [id], (err, target) => {
-    if (err) throw err;
-
-    console.log('Data received from Db:\n');
-    console.log(target);
-
-    if(target) {
-      let inputUser = req.body;
-
-      console.log(inputUser);
-
-      target.name=inputUser.name;
-      target.email = inputUser.email;
-
+    if (err) {
+      throw err;
+    } else {
+      console.log('Data received from Db:\n');
       console.log(target);
 
-      // and now the update
-      connection.query(
+      if (target) {
+        let inputUser = req.body;
+
+        console.log(inputUser);
+
+        target.name = inputUser.name;
+        target.email = inputUser.email;
+
+        console.log(target);
+
+        // and now the update
+        connection.query(
           'UPDATE users SET email = ? Where ID = ?',
           [inputUser.email, id],
           (err, result) => {
@@ -129,14 +117,14 @@ app.put('/api/users/:id', function(req, res) {
           }
         );
 
-      // end of the update
+        // end of the update
 
-      res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify(target));
-    }
-    else {
-      res.setHeader('Content-Type', 'application/json')
-      res.end(); // rloman send 404???
+        res.setHeader('Content-Type', 'application/json')
+        res.end(JSON.stringify(target));
+      } else {
+        res.setHeader('Content-Type', 'application/json')
+        res.end(); // rloman send 404???
+      }
     }
   });
 });
@@ -145,13 +133,13 @@ app.delete('/api/users/:id', function(req, res) {
   let id = +req.params.id;
 
   connection.query(
-  'DELETE FROM users WHERE id = ?', [id], (err, result) => {
-    if (err) throw err;
+    'DELETE FROM users WHERE id = ?', [id], (err, result) => {
+      if (err) throw err;
 
-    console.log(`Deleted ${result.affectedRows} row(s)`);
-    res.end();
-  }
-);
+      console.log(`Deleted ${result.affectedRows} row(s)`);
+      res.end();
+    }
+  );
 });
 
 var server = app.listen(8081, function() {
