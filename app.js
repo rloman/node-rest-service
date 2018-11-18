@@ -43,7 +43,7 @@ app.post('/api/users', function(req, res) {
       res.setHeader('Content-Type', 'application/json')
       // rloman temp
       user.id = result.insertId;
-      res.end(JSON.stringify(user)); // rloman dit nog ophalen en test via select ...
+      res.status(201).end(JSON.stringify(user)); // rloman dit nog ophalen en test via select ...
     } else {
       throw err;
     }
@@ -66,9 +66,12 @@ app.get('/api/users', function(req, res) {
 app.get('/api/users/:id', function(req, res) {
 
   let id = +req.params.id
-  connection.query('SELECT * FROM users where id=?', [id], (err, user) => {
+
+  connection.query('SELECT * FROM users where id=?', id, (err, rows) => {
     if (!err) {
       console.log('Data received from Db:\n');
+
+      let user = rows[0];
       console.log(user);
 
       if (user) {
@@ -76,7 +79,7 @@ app.get('/api/users/:id', function(req, res) {
         res.end(JSON.stringify(user));
       } else {
         res.setHeader('Content-Type', 'application/json')
-        res.end(); // rloman send 404???
+        res.status(404).end();
       }
     } else {
       throw err;
@@ -102,17 +105,20 @@ app.put('/api/users/:id', function(req, res) {
 
               // end of the update => send response
 
-              connection.query('SELECT * FROM users where id=?', [id], (err, user) => {
+              connection.query('SELECT * FROM users where id=?', [id], (err, rows) => {
                 if (!err) {
                   console.log('Data received from Db:\n');
-                  console.log(user);
 
+                  let user = rows[0];
+
+                  console.log(user);
                   if (user) {
                     res.setHeader('Content-Type', 'application/json')
                     res.end(JSON.stringify(user));
                   } else {
                     res.setHeader('Content-Type', 'application/json')
-                    res.end(); // rloman send 404???
+                    console.log("Not found!!!");
+                    res.status(404).end(); // rloman send 404???
                   }
                 } else {
                   throw err;
@@ -132,7 +138,7 @@ app.delete('/api/users/:id', function(req, res) {
     'DELETE FROM users WHERE id = ?', [id], (err, result) => {
       if (!err) {
         console.log(`Deleted ${result.affectedRows} row(s)`);
-        res.end();
+        res.status(204).end();
       }
       else {
         throw err;
