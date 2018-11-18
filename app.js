@@ -94,8 +94,8 @@ app.put('/api/users/:id', function(req, res) {
         console.log("Received email: "+inputUser.email);
 
         connection.query(
-          'UPDATE users SET email = ? Where ID = ?',
-          [inputUser.email, id],
+          'UPDATE users SET name=?, username=?, email = ? Where ID = ?',
+          [inputUser.name, inputUser.username, inputUser.email, id],
           (err, result) => {
             if (!err) {
               console.log(`Changed ${result.changedRows} row(s)`);
