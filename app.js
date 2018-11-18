@@ -90,16 +90,14 @@ app.put('/api/users/:id', function(req, res) {
   let id = +req.params.id
 
   connection.query('SELECT * FROM users where id=?', [id], (err, target) => {
-    if (err) {
-      throw err;
-    } else {
+    if (!err) {
       console.log('Data received from Db:\n');
       console.log(target);
 
       if (target) {
         let inputUser = req.body;
 
-        console.log(inputUser);
+        console.log("Send user: "+inputUser);
 
         target.name = inputUser.name;
         target.email = inputUser.email;
@@ -117,14 +115,18 @@ app.put('/api/users/:id', function(req, res) {
           }
         );
 
-        // end of the update
-
+        // end of the update => send response
         res.setHeader('Content-Type', 'application/json')
         res.end(JSON.stringify(target));
-      } else {
+      }
+      else {
         res.setHeader('Content-Type', 'application/json')
         res.end(); // rloman send 404???
       }
+
+    }
+    else {
+      throw err;
     }
   });
 });
@@ -134,19 +136,22 @@ app.delete('/api/users/:id', function(req, res) {
 
   connection.query(
     'DELETE FROM users WHERE id = ?', [id], (err, result) => {
-      if (err) throw err;
-
-      console.log(`Deleted ${result.affectedRows} row(s)`);
-      res.end();
+      if (!err) {
+        console.log(`Deleted ${result.affectedRows} row(s)`);
+        res.end();
+      }
+      else {
+        throw err;
+      }
     }
   );
 });
 
+// and finally ... run it :-)
 var server = app.listen(8081, function() {
 
   var host = server.address().address
   var port = server.address().port
 
   console.log("Example app listening at http://%s:%s", host, port)
-
-})
+});
