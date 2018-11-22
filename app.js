@@ -35,9 +35,8 @@ const connection = mysql.createConnection({
   database: 'nodetest'
 });
 
-
-
-// rloman why this???
+// this method is invoked AFTER the connection is made
+// so just to mention "Connected!" (the connection is made above)
 connection.connect((err) => {
   if (err) {
     throw err;
