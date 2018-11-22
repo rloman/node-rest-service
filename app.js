@@ -56,18 +56,36 @@ app.post('/api/users', function(req, res) {
   // in this function (the POST callback) execute this query
   // the user is the parsed user
   // the err is a (potential) error
-  // the result is the result of the MYSQL insertion
+  // the result is the result of the MYSQL insertion (THAT IS NOT A JSON OBJECT BUT A TECHNICAL MYSQL OBJECT)
   connection.query('INSERT INTO users SET ?', user, (err, result) => {
     if (!err) {
-
-      // apparently (!err) everything is OK here
 
       // set the Content-Type in header to application/json
       res.setHeader('Content-Type', 'application/json')
 
-      // rloman temp
-      user.id = result.insertId;
-      res.status(201).end(JSON.stringify(user)); // rloman dit nog ophalen en test via select ...
+      // validate the insert and return that as JSON
+      connection.query('SELECT * FROM users where id=?', result.insertId, (err, rows) => {
+        if (!err) {
+          // since we are getting rows here (hopefully one) we have
+          // to read out the first row since that should be the result
+          let user = rows[0];
+
+          // OK we found a user
+          if (user) {
+            res.setHeader('Content-Type', 'application/json')
+            // response end with a string of the found user
+            res.status(201).end(JSON.stringify(user)); // rloman dit nog ophalen en test via select ...
+          } else {
+            // error, we did NOT find a user
+            res.setHeader('Content-Type', 'application/json')
+
+            // so render the common 404 (Not found)
+            res.status(404).end();
+          }
+        } else {
+          throw err;
+        }
+      });
     } else {
       throw err;
     }
