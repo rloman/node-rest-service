@@ -1,16 +1,24 @@
 "use strict";
 
-// create connection with mysql
+// import the mysql NPM module to be able to use mysql
 const mysql = require('mysql');
 
-// rest part
+// import express module (webserver)
 var express = require('express');
+
+// use the express module in the app object
 var app = express();
-var fs = require("fs"); // rloman volgens mij kan deze nu weg
+
+// import body-parser module here
 var bodyParser = require('body-parser');
 
+// say to the app (express instance) that he might sometimes render
+// the body of a POST/PUT from JSON to an Object
 app.use(bodyParser.json());
 
+
+// for now this is to say that everyone can reach this webserver
+// from everywhere
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods", "*");
@@ -18,6 +26,8 @@ app.use(function(req, res, next) {
   next();
 });
 
+
+// create a MySQL connection
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'nodetestuser',
@@ -25,6 +35,8 @@ const connection = mysql.createConnection({
   database: 'nodetest'
 });
 
+// this method is invoked AFTER the connection is made
+// so just to mention "Connected!" (the connection is made above)
 connection.connect((err) => {
   if (err) {
     throw err;
@@ -33,14 +45,26 @@ connection.connect((err) => {
   }
 });
 
+// this is to enable posting to 'api/users' using the callback function
 app.post('/api/users', function(req, res) {
 
+  // this is to read the big string from the body to a user
+ // that process is called 'parsing'
+ //(using the body-parser module above)
   let user = req.body;
 
+  // in this function (the POST callback) execute this query
+  // the user is the parsed user
+  // the err is a (potential) error
+  // the result is the result of the MYSQL insertion
   connection.query('INSERT INTO users SET ?', user, (err, result) => {
     if (!err) {
-      // res.end(JSON.stringify(data, null, 2));
+
+      // apparently (!err) everything is OK here
+
+      // set the Content-Type in header to application/json
       res.setHeader('Content-Type', 'application/json')
+
       // rloman temp
       user.id = result.insertId;
       res.status(201).end(JSON.stringify(user)); // rloman dit nog ophalen en test via select ...
@@ -50,6 +74,7 @@ app.post('/api/users', function(req, res) {
   });
 });
 
+// this is to enable getting from 'api/users' using the callback function
 app.get('/api/users', function(req, res) {
 
   res.setHeader('Content-Type', 'application/json');
@@ -63,6 +88,9 @@ app.get('/api/users', function(req, res) {
   });
 });
 
+
+// this is to enable http://localhost:8081/api/users/3 or something
+// look that the 'id' is read out below
 app.get('/api/users/:id', function(req, res) {
 
   let id = +req.params.id
@@ -71,14 +99,20 @@ app.get('/api/users/:id', function(req, res) {
     if (!err) {
       console.log('Data received from Db:\n');
 
+      // since we are getting rows here (hopefully one) we have
+      // to read out the first row since that should be the result
       let user = rows[0];
-      console.log(user);
 
+      // OK we found a user
       if (user) {
         res.setHeader('Content-Type', 'application/json')
+        // response end with a string of the found user
         res.end(JSON.stringify(user));
       } else {
+        // error, we did NOT find a user
         res.setHeader('Content-Type', 'application/json')
+
+        // so render the common 404 (Not found)
         res.status(404).end();
       }
     } else {
@@ -104,7 +138,7 @@ app.put('/api/users/:id', function(req, res) {
               console.log(`Changed ${result.changedRows} row(s)`);
 
               // end of the update => send response
-
+              // execute a query to find the result of the update
               connection.query('SELECT * FROM users where id=?', [id], (err, rows) => {
                 if (!err) {
                   console.log('Data received from Db:\n');
@@ -148,10 +182,8 @@ app.delete('/api/users/:id', function(req, res) {
 });
 
 // and finally ... run it :-)
+// get the server from the app which runs on port 8081
 var server = app.listen(8081, function() {
 
-  var host = server.address().address
-  var port = server.address().port
-
-  console.log("Example app listening at http://%s:%s", host, port)
+  console.log("Example app listening at http://%s:%s", server.address().address, server.address().port)
 });
