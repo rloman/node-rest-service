@@ -4,13 +4,13 @@
 const mysql = require('mysql');
 
 // import express module (webserver)
-var express = require('express');
+let express = require('express');
 
 // use the express module in the app object
-var app = express();
+let app = express();
 
 // import body-parser module here
-var bodyParser = require('body-parser');
+let bodyParser = require('body-parser');
 
 // say to the app (express instance) that he might sometimes render
 // the body of a POST/PUT from JSON to an Object
@@ -201,7 +201,7 @@ app.delete('/api/users/:id', function(req, res) {
 
 // and finally ... run it :-)
 // get the server from the app which runs on port 8081
-var server = app.listen(8081, function() {
+let server = app.listen(8081, function() {
 
   console.log("Example app listening at http://%s:%s", server.address().address, server.address().port)
 });
