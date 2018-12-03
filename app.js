@@ -139,6 +139,36 @@ app.get('/api/users/:id', function(req, res) {
   });
 });
 
+// this is to enable GET http://localhost:8081/api/users/3/posts
+app.get('/api/users/:id/posts', function(req, res) {
+
+  let id = +req.params.id
+
+  connection.query('SELECT * FROM posts where userId=?', id, (err, posts) => {
+    if (!err) {
+      console.log('Data received from Db:\n');
+
+      // since we are getting rows here (hopefully one) we have
+      // to read out the first row since that should be the result
+
+      if (posts) {
+        res.setHeader('Content-Type', 'application/json')
+        // response end with a string of the found users posts
+        res.end(JSON.stringify(posts));
+      } else {
+        // error, we did NOT find a user
+        res.setHeader('Content-Type', 'application/json')
+
+        // so render the common 404 (Not found)
+        res.status(404).end();
+      }
+    } else {
+      throw err;
+    }
+  });
+});
+
+
 app.put('/api/users/:id', function(req, res) {
 
         // First read id from params
@@ -197,6 +227,55 @@ app.delete('/api/users/:id', function(req, res) {
       }
     }
   );
+});
+
+// this is to enable posting to 'api/users' using the callback function
+app.post('/api/users/:id', function(req, res) {
+
+  // this is to read the big string from the body to a user
+ // that process is called 'parsing'
+ //(using the body-parser module above)
+  let post = req.body;
+
+  console.log(post);
+
+  // in this function (the POST callback) execute this query
+  // the user is the parsed user
+  // the err is a (potential) error
+  // the result is the result of the MYSQL insertion (THAT IS NOT A JSON OBJECT BUT A TECHNICAL MYSQL OBJECT)
+  connection.query('INSERT INTO posts SET ?', post, (err, result) => {
+    if (!err) {
+
+      // set the Content-Type in header to application/json
+      res.setHeader('Content-Type', 'application/json')
+
+      // validate the insert and return that as JSON
+      connection.query('SELECT * FROM posts where id=?', result.insertId, (err, rows) => {
+        if (!err) {
+          // since we are getting rows here (hopefully one) we have
+          // to read out the first row since that should be the result
+          let post = rows[0];
+
+          // OK we found a user
+          if (post) {
+            res.setHeader('Content-Type', 'application/json')
+            // response end with a string of the found user
+            res.status(201).end(JSON.stringify(post)); // rloman dit nog ophalen en test via select ...
+          } else {
+            // error, we did NOT find a user
+            res.setHeader('Content-Type', 'application/json')
+
+            // so render the common 404 (Not found)
+            res.status(404).end();
+          }
+        } else {
+          throw err;
+        }
+      });
+    } else {
+      throw err;
+    }
+  });
 });
 
 // and finally ... run it :-)
