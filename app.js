@@ -75,6 +75,26 @@ app.get('/api/users/:id', function(req, res) {
 
 });
 
+app.get('/api/users/:id/posts', function(req, res) {
+
+  let id = +req.params.id
+
+  let user = findById(id);
+
+  let posts = user.posts;
+
+  if(posts) {
+    res.setHeader('Content-Type', 'application/json')
+    res.end(JSON.stringify(posts));
+  }
+  else {
+    res.setHeader('Content-Type', 'application/json')
+    res.end(); // rloman send 404???
+  }
+
+
+});
+
 
 app.post('/api/users', function(req, res) {
 
@@ -85,6 +105,21 @@ app.post('/api/users', function(req, res) {
   // res.end(JSON.stringify(data, null, 2));
   res.setHeader('Content-Type', 'application/json')
   res.end(JSON.stringify(user));
+});
+
+app.post('/api/users/:id', function(req, res) {
+
+  let post = req.body;
+
+  let id = +req.params.id;
+
+  let user = findById(id);
+
+  user.posts.push(post);
+
+  // res.end(JSON.stringify(data, null, 2));
+  res.setHeader('Content-Type', 'application/json')
+  res.end(JSON.stringify(post));
 });
 
 app.put('/api/users/:id', function(req, res) {
