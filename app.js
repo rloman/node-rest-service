@@ -159,6 +159,6 @@ var server = app.listen(8081, function() {
   var host = server.address().address
   var port = server.address().port
 
-  console.log("Example app listening at http://%s:%s", host, port)
+  console.log("Example app listening 2018-12-13 at http://%s:%s", host, port)
 
 })
