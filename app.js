@@ -5,7 +5,7 @@ var app = express();
 var fs = require("fs");
 var bodyParser = require('body-parser');
 
-var users = [];
+var games = [];
 
 var lastId = -1;
 
@@ -13,10 +13,10 @@ var lastId = -1;
 app.use(bodyParser.json());
 
 function init() {
-  fs.readFile(__dirname + "/" + "users.json", 'utf8', function(err, data) {
-    users = JSON.parse(data);
+  fs.readFile(__dirname + "/" + "games.json", 'utf8', function(err, data) {
+    games = JSON.parse(data);
 
-    lastId = users.length;
+    lastId = games.length;
   });
 }
 
@@ -31,18 +31,18 @@ app.use(function(req, res, next) {
 
 function findById(id) {
 
- for(let user of users) {
-    if (user.id === id) {
+ for(let game of games) {
+    if (game.id === id) {
 
-      return user;
+      return game;
     }
   }
 }
 
 
 function findIndexById(id) {
-  for(let i = 0;i<users.length;i++) {
-     if (users[i].id === id) {
+  for(let i = 0;i<games.length;i++) {
+     if (games[i].id === id) {
 
        return i;
      }
@@ -50,22 +50,22 @@ function findIndexById(id) {
 }
 
 
-app.get('/api/users', function(req, res) {
+app.get('/api/games', function(req, res) {
 
   res.setHeader('Content-Type', 'application/json')
 
-  res.end(JSON.stringify(users));
+  res.end(JSON.stringify(games));
 });
 
-app.get('/api/users/:id', function(req, res) {
+app.get('/api/games/:id', function(req, res) {
 
   let id = +req.params.id
 
-  let user = findById(id);
+  let game = findById(id);
 
-  if(user) {
+  if(game) {
     res.setHeader('Content-Type', 'application/json')
-    res.end(JSON.stringify(user));
+    res.end(JSON.stringify(game));
   }
   else {
     res.setHeader('Content-Type', 'application/json')
@@ -75,13 +75,13 @@ app.get('/api/users/:id', function(req, res) {
 
 });
 
-app.get('/api/users/:id/posts', function(req, res) {
+app.get('/api/games/:id/posts', function(req, res) {
 
   let id = +req.params.id
 
-  let user = findById(id);
+  let game = findById(id);
 
-  let posts = user.posts;
+  let posts = game.posts;
 
   if(posts) {
     res.setHeader('Content-Type', 'application/json')
@@ -96,59 +96,59 @@ app.get('/api/users/:id/posts', function(req, res) {
 });
 
 
-app.post('/api/users', function(req, res) {
+app.post('/api/games', function(req, res) {
 
-  let user = req.body;
-  user.id = ++lastId
-  users.push(user);
+  let game = req.body;
+  game.id = ++lastId
+  games.push(game);
 
   // res.end(JSON.stringify(data, null, 2));
   res.setHeader('Content-Type', 'application/json')
-  res.end(JSON.stringify(user));
+  res.end(JSON.stringify(game));
 });
 
-app.post('/api/users/:id', function(req, res) {
+app.post('/api/games/:id', function(req, res) {
 
   let post = req.body;
 
   let id = +req.params.id;
 
-  let user = findById(id);
+  let game = findById(id);
 
-  user.posts.push(post);
+  game.posts.push(post);
 
   // res.end(JSON.stringify(data, null, 2));
   res.setHeader('Content-Type', 'application/json')
   res.end(JSON.stringify(post));
 });
 
-app.put('/api/users/:id', function(req, res) {
-  // First read existing user
+app.put('/api/games/:id', function(req, res) {
+  // First read existing game
   let id = +req.params.id;
   let victim = findById(id);
 
-  let inputUser = req.body;
+  let inputgame = req.body;
 
-  victim.name=inputUser.name;
-  victim.username=inputUser.username;
-  victim.email = inputUser.email;
+  victim.name=inputgame.name;
+  victim.gamename=inputgame.gamename;
+  victim.email = inputgame.email;
 
   res.setHeader('Content-Type', 'application/json')
   res.end(JSON.stringify(victim));
 });
 
-app.delete('/api/users/:id', function(req, res) {
-  let oldLength = users.length;
+app.delete('/api/games/:id', function(req, res) {
+  let oldLength = games.length;
   let id = +req.params.id;
 
   let victimIndex = findIndexById(id);
 
-  users.splice(victimIndex, 1);
+  games.splice(victimIndex, 1);
 
-    console.log(`post: users.length=${users.length}`);
+    console.log(`post: games.length=${games.length}`);
 
     // check for error
-    if(!(users.length === oldLength-1)) { //error
+    if(!(games.length === oldLength-1)) { //error
       throw new Error("AssertionError");
     }
     res.end();
