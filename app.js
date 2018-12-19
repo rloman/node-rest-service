@@ -75,17 +75,17 @@ app.get('/api/games/:id', function(req, res) {
 
 });
 
-app.get('/api/games/:id/posts', function(req, res) {
+app.get('/api/games/:id/players', function(req, res) {
 
   let id = +req.params.id
 
   let game = findById(id);
 
-  let posts = game.posts;
+  let players = game.players;
 
-  if(posts) {
+  if(players) {
     res.setHeader('Content-Type', 'application/json')
-    res.end(JSON.stringify(posts));
+    res.end(JSON.stringify(players));
   }
   else {
     res.setHeader('Content-Type', 'application/json')
@@ -109,13 +109,13 @@ app.post('/api/games', function(req, res) {
 
 app.post('/api/games/:id', function(req, res) {
 
-  let post = req.body;
+  let player = req.body;
 
   let id = +req.params.id;
 
   let game = findById(id);
 
-  game.posts.push(post);
+  game.players.push(player);
 
   // res.end(JSON.stringify(data, null, 2));
   res.setHeader('Content-Type', 'application/json')
@@ -130,8 +130,8 @@ app.put('/api/games/:id', function(req, res) {
   let inputgame = req.body;
 
   victim.name=inputgame.name;
-  victim.gamename=inputgame.gamename;
-  victim.email = inputgame.email;
+  victim.difficulty=inputgame.difficulty;
+  victim.playtime = inputgame.playtime;
 
   res.setHeader('Content-Type', 'application/json')
   res.end(JSON.stringify(victim));

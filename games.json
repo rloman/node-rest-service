@@ -1,26 +1,27 @@
 [{
     "id": 1,
-    "name": "John Doe",
+    "name": "Chess",
     "difficulty": "simple",
     "playtime": 120,
     "numberOfPlayers": 4,
     "players": [{
         "id": 1,
         "gameId": 1,
-        "name": "Lorem ipsum dolor sit amet.",
+        "name": "Raymie",
         "dateOfBirth": "2018-06-01"
       },
       {
         "id": 2,
         "gameId": 1,
-        "name": "Lorem ipsum dolor sit amet.",
+        "name": "John",
         "dateOfBirth": "2018-06-01"
       },
       {
         "id": 3,
         "gameId": 1,
-        "name": "Lorem ipsum dolor sit amet.",
+        "name": "Jane",
         "dateOfBirth": "2018-06-01"
       }
     ]
   }
+]
